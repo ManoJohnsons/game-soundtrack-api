@@ -12,4 +12,6 @@ public interface GameService {
     public GameResponseDTO insertGame(GameRequestDTO dto);
 
     public GameResponseDTO searchGameById(Long id);
+
+    public GameResponseDTO updateGame(Long id, GameRequestDTO dto);
 }

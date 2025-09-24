@@ -17,6 +17,8 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 @RequestMapping("/games")
@@ -43,6 +45,12 @@ public class GameController {
         GameResponseDTO newGame = service.insertGame(gameRequestDTO);
         URI location = uriBuilder.path("/games/{id}").buildAndExpand(newGame.getId()).toUri();
         return ResponseEntity.created(location).body(newGame);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GameResponseDTO> updateGame(@PathVariable Long id, @RequestBody @Valid GameRequestDTO gameRequestDTO) {
+        GameResponseDTO gameToUpdate = service.updateGame(id, gameRequestDTO);
+        return ResponseEntity.ok(gameToUpdate);
     }
 
 }

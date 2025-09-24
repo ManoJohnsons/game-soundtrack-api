@@ -47,4 +47,19 @@ public class GameServiceImpl implements GameService {
         return new GameResponseDTO(gameFetched);
     }
 
+    @Override
+    @Transactional
+    public GameResponseDTO updateGame(Long id, GameRequestDTO dto) {
+        Game gameToUpdate = repository.findById(id).orElseThrow(NoSuchElementException::new);
+
+        gameToUpdate.setGameTitle(dto.getGameTitle());
+        gameToUpdate.setDeveloper(dto.getDeveloper());
+        gameToUpdate.setPublisher(dto.getPublisher());
+        gameToUpdate.setReleaseYear(dto.getReleaseYear());
+
+        Game gameUpdated = repository.save(gameToUpdate);
+
+        return new GameResponseDTO(gameUpdated);
+    }
+
 }
