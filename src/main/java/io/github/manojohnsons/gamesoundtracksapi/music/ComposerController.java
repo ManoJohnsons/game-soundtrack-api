@@ -1,6 +1,7 @@
 package io.github.manojohnsons.gamesoundtracksapi.music;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,9 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/composers")
@@ -31,4 +35,15 @@ public class ComposerController {
         return ResponseEntity.created(location).body(newComposer);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ComposerResponseDTO>> searchAllComposers() {
+        List<ComposerResponseDTO> composers = service.searchAllComposers();
+        return ResponseEntity.ok(composers);
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<ComposerResponseDTO> searchComposerById(@PathVariable Long id) {
+        ComposerResponseDTO composerFetched = service.searchComposerById(id);
+        return ResponseEntity.ok(composerFetched);
+    }
 }

@@ -1,7 +1,11 @@
 package io.github.manojohnsons.gamesoundtracksapi.music.impl;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.manojohnsons.gamesoundtracksapi.music.*;
 import io.github.manojohnsons.gamesoundtracksapi.music.dtos.ComposerRequestDTO;
@@ -14,6 +18,7 @@ public class ComposerServiceImpl implements ComposerService {
     private ComposerRepository repository;
 
     @Override
+    @Transactional
     public ComposerResponseDTO insertComposer(ComposerRequestDTO composerDTO) {
         Composer composerToAdd = new Composer();
 
@@ -22,6 +27,20 @@ public class ComposerServiceImpl implements ComposerService {
         Composer composerSaved = repository.save(composerToAdd);
 
         return new ComposerResponseDTO(composerSaved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ComposerResponseDTO> searchAllComposers() {
+        List<Composer> allComposers = repository.findAll();
+        return allComposers.stream().map(ComposerResponseDTO::new).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ComposerResponseDTO searchComposerById(Long id) {
+        Composer composerFetched = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        return new ComposerResponseDTO(composerFetched);
     }
 
 }
