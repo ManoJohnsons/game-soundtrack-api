@@ -6,11 +6,11 @@ import io.github.manojohnsons.gamesoundtracksapi.game.Game;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
 @NoArgsConstructor
+@Getter
 public class GameRequestDTO {
 
     @NotBlank(message = "O nome do jogo não pode estar em branco.")

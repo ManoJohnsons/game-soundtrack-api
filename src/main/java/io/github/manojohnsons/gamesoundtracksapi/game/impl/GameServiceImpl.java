@@ -18,25 +18,25 @@ public class GameServiceImpl implements GameService {
     private GameRepository repository;
 
     @Override
-    @Transactional(readOnly = true)
-    public List<GameResponseDTO> searchAll() {
-        List<Game> games = repository.findAll();
-        return games.stream().map(GameResponseDTO::new).toList();
-    }
-
-    @Override
     @Transactional
     public GameResponseDTO insertGame(GameRequestDTO gameDTO) {
         Game gameToCreate = new Game();
-
+        
         gameToCreate.setGameTitle(gameDTO.getGameTitle());
         gameToCreate.setDeveloper(gameDTO.getDeveloper());
         gameToCreate.setPublisher(gameDTO.getPublisher());
         gameToCreate.setReleaseYear(gameDTO.getReleaseYear());
-
+        
         Game gameSaved = repository.save(gameToCreate);
-
+        
         return new GameResponseDTO(gameSaved);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<GameResponseDTO> searchAllGames() {
+        List<Game> allGames = repository.findAll();
+        return allGames.stream().map(GameResponseDTO::new).toList();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public GameResponseDTO updateGame(Long id, GameRequestDTO dto) {
+    public GameResponseDTO updateGameById(Long id, GameRequestDTO dto) {
         Game gameToUpdate = repository.findById(id).orElseThrow(NoSuchElementException::new);
 
         gameToUpdate.setGameTitle(dto.getGameTitle());
@@ -64,7 +64,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void deleteGame(Long id) {
+    public void deleteGameById(Long id) {
         if (!repository.existsById(id)) {
             throw new RuntimeException("Jogo não encontrado com o ID: " + id);
         }

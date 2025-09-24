@@ -12,16 +12,18 @@ import lombok.Setter;
 @Entity
 @Table(name = "tab_composer")
 @NoArgsConstructor
+@Getter
 public class Composer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter @Setter private Long id;
+    private Long id;
 
     @Column(nullable = false)
-    @Getter @Setter private String name;
+    @Setter
+    private String name;
 
     @ManyToMany(mappedBy = "composers")
     @JsonIgnore
-    @Getter @Setter private List<Music> musics;
+    private List<Music> musics;
 }

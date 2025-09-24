@@ -7,13 +7,13 @@ import io.github.manojohnsons.gamesoundtracksapi.game.dtos.GameResponseDTO;
 
 public interface GameService {
 
-    public List<GameResponseDTO> searchAll();
-
-    public GameResponseDTO insertGame(GameRequestDTO dto);
+    public GameResponseDTO insertGame(GameRequestDTO gameDTO);
+    
+    public List<GameResponseDTO> searchAllGames();
 
     public GameResponseDTO searchGameById(Long id);
 
-    public GameResponseDTO updateGame(Long id, GameRequestDTO dto);
+    public GameResponseDTO updateGameById(Long id, GameRequestDTO gameDTO);
 
-    public void deleteGame(Long id);
+    public void deleteGameById(Long id);
 }

@@ -5,13 +5,14 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "tab_music")
 @NoArgsConstructor
-@Data
+@Getter
 public class Music {
 
     @Id
@@ -19,14 +20,17 @@ public class Music {
     private Long id;
 
     @Column(name = "music_title", nullable = false)
+    @Setter
     private String musicTitle;
 
     @Column(name = "duration_in_seconds", nullable = false)
+    @Setter
     private Integer durationInSeconds;
 
     @ManyToOne
     @JoinColumn(name = "id_album", nullable = false)
     @JsonIgnore
+    @Setter
     private Album album;
 
     @ManyToMany

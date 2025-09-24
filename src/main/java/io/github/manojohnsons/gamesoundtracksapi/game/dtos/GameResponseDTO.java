@@ -2,12 +2,12 @@ package io.github.manojohnsons.gamesoundtracksapi.game.dtos;
 
 import io.github.manojohnsons.gamesoundtracksapi.game.Game;
 import lombok.Getter;
-import lombok.Setter;
 
+@Getter
 public class GameResponseDTO {
     
-    @Getter @Setter private Long id;
-    @Getter @Setter private String gameTitle;
+    private Long id;
+    private String gameTitle;
 
     public GameResponseDTO(Game game) {
         this.id = game.getId();

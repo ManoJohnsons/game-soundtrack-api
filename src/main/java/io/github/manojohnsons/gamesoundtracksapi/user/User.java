@@ -4,13 +4,14 @@ import java.util.List;
 
 import io.github.manojohnsons.gamesoundtracksapi.music.Music;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "tab_users")
 @NoArgsConstructor
-@Data
+@Getter
 public class User {
 
     @Id
@@ -18,9 +19,11 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @Setter
     private String username;
 
     @Column(nullable = false)
+    @Setter
     private String password;
 
     @ManyToMany

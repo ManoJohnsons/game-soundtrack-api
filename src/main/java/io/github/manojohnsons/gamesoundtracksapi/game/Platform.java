@@ -10,15 +10,17 @@ import lombok.Setter;
 @Entity
 @Table(name = "tab_platform")
 @NoArgsConstructor
+@Getter
 public class Platform {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter @Setter private Long id;
+    private Long id;
 
     @Column(name = "platform_name", nullable = false, unique = true)
-    @Getter @Setter private String platformName;
+    @Setter 
+    private String platformName;
 
     @OneToMany(mappedBy = "platform", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Getter @Setter private List<Availability> availabilities;
+    private List<Availability> availabilities;
 }

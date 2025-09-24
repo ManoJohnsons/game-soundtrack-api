@@ -5,13 +5,14 @@ import java.util.List;
 
 import io.github.manojohnsons.gamesoundtracksapi.music.Album;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "tab_game")
-@Data
 @NoArgsConstructor
+@Getter
 public class Game {
 
     @Id
@@ -19,15 +20,19 @@ public class Game {
     private Long id;
 
     @Column(name = "game_title", nullable = false)
+    @Setter
     private String gameTitle;
 
     @Column(nullable = false)
+    @Setter
     private String developer;
 
     @Column(nullable = false)
+    @Setter
     private String publisher;
 
     @Column(name = "release_year", nullable = false)
+    @Setter
     private Date releaseYear;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
