@@ -10,4 +10,6 @@ public interface GameService {
     public List<GameResponseDTO> searchAll();
 
     public GameResponseDTO insertGame(GameRequestDTO dto);
+
+    public GameResponseDTO searchGameById(Long id);
 }

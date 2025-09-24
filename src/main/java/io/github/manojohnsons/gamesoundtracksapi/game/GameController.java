@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,6 +29,12 @@ public class GameController {
     public ResponseEntity<List<GameResponseDTO>> searchAll() {
         List<GameResponseDTO> games = service.searchAll();
         return ResponseEntity.ok(games);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GameResponseDTO> searchGameById(@PathVariable Long id) {
+        var gameFetched = service.searchGameById(id);
+        return ResponseEntity.ok(gameFetched);
     }
 
     @PostMapping

@@ -1,6 +1,7 @@
 package io.github.manojohnsons.gamesoundtracksapi.game.impl;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,13 @@ public class GameServiceImpl implements GameService {
 
         return new GameResponseDTO(gameSaved);
     }
-    
+
+    @Override
+    @Transactional(readOnly = true)
+    public GameResponseDTO searchGameById(Long id) {
+        Game gameFetched = repository.findById(id).orElseThrow(NoSuchElementException::new);
+
+        return new GameResponseDTO(gameFetched);
+    }
+
 }
