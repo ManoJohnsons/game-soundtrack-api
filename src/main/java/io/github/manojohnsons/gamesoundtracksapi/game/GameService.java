@@ -14,4 +14,6 @@ public interface GameService {
     public GameResponseDTO searchGameById(Long id);
 
     public GameResponseDTO updateGame(Long id, GameRequestDTO dto);
+
+    public void deleteGame(Long id);
 }

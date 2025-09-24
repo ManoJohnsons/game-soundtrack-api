@@ -62,4 +62,14 @@ public class GameServiceImpl implements GameService {
         return new GameResponseDTO(gameUpdated);
     }
 
+    @Override
+    @Transactional
+    public void deleteGame(Long id) {
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("Jogo não encontrado com o ID: " + id);
+        }
+
+        repository.deleteById(id);
+    }
+
 }
