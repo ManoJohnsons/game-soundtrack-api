@@ -12,4 +12,8 @@ public interface ComposerService {
     List<ComposerResponseDTO> searchAllComposers();
 
     ComposerResponseDTO searchComposerById(Long id);
+
+    ComposerResponseDTO updateComposerById(Long id, ComposerRequestDTO composerDTO);
+
+    void deleteComposerById(Long id);
 }

@@ -43,4 +43,26 @@ public class ComposerServiceImpl implements ComposerService {
         return new ComposerResponseDTO(composerFetched);
     }
 
+    @Override
+    @Transactional
+    public ComposerResponseDTO updateComposerById(Long id, ComposerRequestDTO composerDTO) {
+        Composer composerToUpdate = repository.findById(id).orElseThrow(NoSuchElementException::new);
+
+        composerToUpdate.setName(composerDTO.getName());
+
+        Composer composerUpdated = repository.save(composerToUpdate);
+
+        return new ComposerResponseDTO(composerUpdated);
+    }
+
+    @Override
+    @Transactional
+    public void deleteComposerById(Long id) {
+        if(!repository.existsById(id)) {
+            throw new RuntimeException("Compositor/Artista não encontrado com o ID: " + id);
+        }
+
+        repository.deleteById(id);
+    }
+
 }
