@@ -26,18 +26,21 @@ public class PlatformController {
             UriComponentsBuilder uriBuilder) {
         PlatformResponseDTO newPlatform = service.insertPlatform(platformRequestDTO);
         URI location = uriBuilder.path("/platforms/{id}").buildAndExpand(newPlatform.getId()).toUri();
+        
         return ResponseEntity.created(location).body(newPlatform);
     }
 
     @GetMapping
     public ResponseEntity<List<PlatformResponseDTO>> getAllPlatforms() {
         List<PlatformResponseDTO> allPlatforms = service.getAllPlatforms();
+        
         return ResponseEntity.ok(allPlatforms);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PlatformResponseDTO> getPlatformById(@PathVariable Long id) {
         PlatformResponseDTO platformFetched = service.getPlatformById(id);
+        
         return ResponseEntity.ok(platformFetched);
     }
 
@@ -45,6 +48,7 @@ public class PlatformController {
     public ResponseEntity<PlatformResponseDTO> updatePlatform(@PathVariable Long id,
             @RequestBody @Valid PlatformRequestDTO platformRequestDTO) {
         PlatformResponseDTO platformUpdated = service.updatePlatform(id, platformRequestDTO);
+        
         return ResponseEntity.ok(platformUpdated);
     }
 

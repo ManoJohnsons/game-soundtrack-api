@@ -1,19 +1,58 @@
 package io.github.manojohnsons.gamesoundtracksapi.game;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.PlatformRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.PlatformResponseDTO;
 
-public interface PlatformService {
-    
-    PlatformResponseDTO insertPlatform(PlatformRequestDTO platformRequestDTO);
+@Service
+public class PlatformService {
 
-    PlatformResponseDTO getPlatformById(Long id);
+    @Autowired
+    private PlatformRepository repository;
 
-    List<PlatformResponseDTO> getAllPlatforms();
+    @Transactional
+    public PlatformResponseDTO insertPlatform(PlatformRequestDTO platformRequestDTO) {
+        Platform platformToInsert = new Platform(platformRequestDTO.getPlatformName());
+        Platform platformCreated = repository.save(platformToInsert);
 
-    PlatformResponseDTO updatePlatform(Long id, PlatformRequestDTO platformRequestDTO);
+        return new PlatformResponseDTO(platformCreated);
+    }
 
-    void deletePlatform(Long id);
+    @Transactional(readOnly = true)
+    public PlatformResponseDTO getPlatformById(Long id) {
+        Platform platformFetched = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        
+        return new PlatformResponseDTO(platformFetched);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlatformResponseDTO> getAllPlatforms() {
+        List<Platform> allPlatforms = repository.findAll();
+        
+        return allPlatforms.stream().map(PlatformResponseDTO::new).toList();
+    }
+
+    @Transactional
+    public PlatformResponseDTO updatePlatform(Long id, PlatformRequestDTO platformRequestDTO) {
+        Platform platformToUpdate = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        platformToUpdate.setPlatformName(platformRequestDTO.getPlatformName());
+        Platform platformUpdated = repository.save(platformToUpdate);
+
+        return new PlatformResponseDTO(platformUpdated);
+    }
+
+    @Transactional
+    public void deletePlatform(Long id) {
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("Plataforma não encontrada com o ID: " + id);
+        }
+        repository.deleteById(id);
+    }
+
 }

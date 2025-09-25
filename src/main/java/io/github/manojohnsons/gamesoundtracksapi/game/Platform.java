@@ -18,9 +18,13 @@ public class Platform {
     private Long id;
 
     @Column(name = "platform_name", nullable = false, unique = true)
-    @Setter 
+    @Setter
     private String platformName;
 
     @OneToMany(mappedBy = "platform", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Availability> availabilities;
+
+    public Platform(String platformName) {
+        this.platformName = platformName;
+    }
 }

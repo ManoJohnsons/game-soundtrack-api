@@ -13,7 +13,6 @@ import io.github.manojohnsons.gamesoundtracksapi.game.dtos.GameRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.GameResponseDTO;
 import jakarta.validation.Valid;
 
-
 @RestController
 @RequestMapping("/games")
 public class GameController {
@@ -21,29 +20,34 @@ public class GameController {
     @Autowired
     private GameService service;
 
+    @PostMapping
+    public ResponseEntity<GameResponseDTO> insertGame(@RequestBody @Valid GameRequestDTO gameRequestDTO,
+            UriComponentsBuilder uriBuilder) {
+        GameResponseDTO newGame = service.insertGame(gameRequestDTO);
+        URI location = uriBuilder.path("/games/{id}").buildAndExpand(newGame.getId()).toUri();
+        
+        return ResponseEntity.created(location).body(newGame);
+    }
+
     @GetMapping
     public ResponseEntity<List<GameResponseDTO>> searchAllGames() {
         List<GameResponseDTO> games = service.searchAllGames();
+        
         return ResponseEntity.ok(games);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<GameResponseDTO> searchGameById(@PathVariable Long id) {
         var gameFetched = service.searchGameById(id);
+        
         return ResponseEntity.ok(gameFetched);
     }
 
-    @PostMapping
-    public ResponseEntity<GameResponseDTO> insertGame(@RequestBody @Valid GameRequestDTO gameRequestDTO,
-            UriComponentsBuilder uriBuilder) {
-        GameResponseDTO newGame = service.insertGame(gameRequestDTO);
-        URI location = uriBuilder.path("/games/{id}").buildAndExpand(newGame.getId()).toUri();
-        return ResponseEntity.created(location).body(newGame);
-    }
-
     @PutMapping("/{id}")
-    public ResponseEntity<GameResponseDTO> updateGame(@PathVariable Long id, @RequestBody @Valid GameRequestDTO gameRequestDTO) {
+    public ResponseEntity<GameResponseDTO> updateGame(@PathVariable Long id,
+            @RequestBody @Valid GameRequestDTO gameRequestDTO) {
         GameResponseDTO gameToUpdate = service.updateGameById(id, gameRequestDTO);
+        
         return ResponseEntity.ok(gameToUpdate);
     }
 
@@ -52,5 +56,4 @@ public class GameController {
     public void deleteGame(@PathVariable Long id) {
         service.deleteGameById(id);
     }
-
 }

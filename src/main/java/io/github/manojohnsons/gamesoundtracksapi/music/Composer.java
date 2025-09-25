@@ -26,4 +26,8 @@ public class Composer {
     @ManyToMany(mappedBy = "composers")
     @JsonIgnore
     private List<Music> musics;
+
+    public Composer(String name) {
+        this.name = name;
+    }
 }

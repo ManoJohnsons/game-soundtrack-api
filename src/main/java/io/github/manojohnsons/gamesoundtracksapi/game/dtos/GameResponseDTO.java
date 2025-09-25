@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class GameResponseDTO {
-    
+
     private Long id;
     private String gameTitle;
 

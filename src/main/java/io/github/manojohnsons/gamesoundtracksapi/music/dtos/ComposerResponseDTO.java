@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class ComposerResponseDTO {
-    
+
     private Long id;
     private String name;
 
