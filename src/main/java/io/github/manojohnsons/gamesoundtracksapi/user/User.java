@@ -29,4 +29,9 @@ public class User {
     @ManyToMany
     @JoinTable(name = "user_favorite_musics", joinColumns = @JoinColumn(name = "id_user"), inverseJoinColumns = @JoinColumn(name = "id_music"))
     private List<Music> favoriteMusics;
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }
