@@ -1,6 +1,7 @@
 package io.github.manojohnsons.gamesoundtracksapi.game;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.github.manojohnsons.gamesoundtracksapi.music.Album;
@@ -33,10 +34,10 @@ public class Game {
 
     @Column(name = "release_year", nullable = false)
     @Setter
-    private Date releaseYear;
+    private LocalDate releaseYear;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Album> albuns;
+    private List<Album> albums = new ArrayList<>();
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Availability> availabilities;

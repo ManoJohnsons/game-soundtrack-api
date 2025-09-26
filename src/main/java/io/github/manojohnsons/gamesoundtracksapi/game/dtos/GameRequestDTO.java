@@ -1,6 +1,6 @@
 package io.github.manojohnsons.gamesoundtracksapi.game.dtos;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import io.github.manojohnsons.gamesoundtracksapi.game.Game;
 import jakarta.validation.constraints.NotBlank;
@@ -24,7 +24,7 @@ public class GameRequestDTO {
 
     @NotNull(message = "O ano de lançamento não pode ser nulo.")
     @PastOrPresent(message = "O ano de lançamento não pode ser no futuro.")
-    private Date releaseYear;
+    private LocalDate releaseYear;
 
     public GameRequestDTO(Game game) {
         this.gameTitle = game.getGameTitle();

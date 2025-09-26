@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @RestController
-@RequestMapping("games/{gameId}/albuns")
+@RequestMapping("games/{gameId}/albums")
 public class AlbumController {
 
     private final AlbumService albumService;
@@ -27,7 +27,7 @@ public class AlbumController {
     public ResponseEntity<AlbumResponseDTO> addAlbum(@PathVariable Long gameId,
             @RequestBody @Valid AlbumRequestDTO albumRequestDTO, UriComponentsBuilder uriBuilder) {
         AlbumResponseDTO newAlbum = albumService.addAlbum(gameId, albumRequestDTO);
-        URI location = uriBuilder.path("games/{gameId}/albuns/{albumId}").buildAndExpand(gameId, newAlbum.getId())
+        URI location = uriBuilder.path("games/{gameId}/albums/{albumId}").buildAndExpand(gameId, newAlbum.getId())
                 .toUri();
 
         return ResponseEntity.created(location).body(newAlbum);
@@ -35,14 +35,14 @@ public class AlbumController {
 
     @GetMapping
     public ResponseEntity<List<AlbumResponseDTO>> listAlbuns(@PathVariable Long gameId) {
-        List<AlbumResponseDTO> albuns = albumService.listAlbunsOfAGame(gameId);
-        
+        List<AlbumResponseDTO> albuns = albumService.listAlbumsOfAGame(gameId);
+
         return ResponseEntity.ok(albuns);
     }
 
     @GetMapping("/{albumId}")
     public ResponseEntity<AlbumResponseDTO> searchAlbumById(@PathVariable Long gameId, @PathVariable Long albumId) {
-        AlbumResponseDTO album = albumService.searchAlbumById(gameId, albumId);
+        AlbumResponseDTO album = albumService.findAlbumById(gameId, albumId);
 
         return ResponseEntity.ok(album);
     }

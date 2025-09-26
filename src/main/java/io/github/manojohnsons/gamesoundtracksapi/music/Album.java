@@ -1,5 +1,6 @@
 package io.github.manojohnsons.gamesoundtracksapi.music;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,11 +28,10 @@ public class Album {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_game", nullable = false)
     @JsonIgnore
-    @Setter
     private Game game;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Music> musics;
+    private List<Music> musics = new ArrayList<>();
 
     public Album(String albumTitle, Game game) {
         this.albumTitle = albumTitle;
