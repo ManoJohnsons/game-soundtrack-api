@@ -1,0 +1,20 @@
+{
+  "properties": [
+    {
+      "name": "api.security.token.secret",
+      "type": "java.lang.String",
+      "description": "Chave secreta para a assinatura de tokens JWT."
+    },
+    {
+      "name": "api.security.token.issuer",
+      "type": "java.lang.String",
+      "description": "Nome do emissor do token JWT."
+    },
+    {
+      "name": "api.security.token.expiration-hours",
+      "type": "java.lang.String",
+      "description": "Tempo de expiração do token JWT em horas.",
+      "defaultValue": 2
+    }
+  ]
+}

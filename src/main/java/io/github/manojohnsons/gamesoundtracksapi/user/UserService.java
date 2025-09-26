@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,10 +17,13 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Transactional
     public UserResponseDTO insertUser(UserRequestDTO userRequestDTO) {
-        // TODO: Add password encryption.
-        User newUser = new User(userRequestDTO.getUsername(), userRequestDTO.getPassword());
+        var encryptedPassword = passwordEncoder.encode(userRequestDTO.getPassword());
+        User newUser = new User(userRequestDTO.getUsername(), encryptedPassword, Role.USER);
         User userSaved = repository.save(newUser);
 
         return new UserResponseDTO(userSaved);
@@ -43,7 +47,7 @@ public class UserService {
     public UserResponseDTO updateUserById(Long id, UserRequestDTO userRequestDTO) {
         User userToUpdate = repository.findById(id).orElseThrow(NoSuchElementException::new);
         userToUpdate.setUsername(userRequestDTO.getUsername());
-        userToUpdate.setPassword(userRequestDTO.getPassword()); // TODO: Encrypt new password
+        userToUpdate.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         User userUpdated = repository.save(userToUpdate);
 
         return new UserResponseDTO(userUpdated);
