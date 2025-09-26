@@ -32,4 +32,9 @@ public class Album {
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Music> musics;
+
+    public Album(String albumTitle, Game game) {
+        this.albumTitle = albumTitle;
+        this.game = game;
+    }
 }
