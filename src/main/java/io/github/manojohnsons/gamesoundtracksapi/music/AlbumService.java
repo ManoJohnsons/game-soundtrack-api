@@ -1,5 +1,7 @@
 package io.github.manojohnsons.gamesoundtracksapi.music;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,5 +29,28 @@ public class AlbumService {
         Album albumSaved = gameWithAlbumSaved.getAlbuns().get(gameWithAlbumSaved.getAlbuns().size() - 1);
 
         return new AlbumResponseDTO(albumSaved);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AlbumResponseDTO> listAlbunsOfAGame(Long gameId) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new RuntimeException("Jogo não encontrado com o ID: " + gameId));
+        List<Album> gameAlbums = game.getAlbuns();
+
+        return gameAlbums.stream().map(AlbumResponseDTO::new).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public AlbumResponseDTO searchAlbumById(Long gameId, Long albumId) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new RuntimeException("Jogo não encontrado com o ID: " + gameId));
+        Album album = game.getAlbuns().stream()
+                .filter(a -> a.getId().equals(albumId))
+                .findFirst()
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Album com ID " + albumId + " não encontrado para o jogo com ID " + gameId));
+
+        return new AlbumResponseDTO(album);
     }
 }
