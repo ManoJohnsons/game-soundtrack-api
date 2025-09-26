@@ -53,4 +53,34 @@ public class AlbumService {
 
         return new AlbumResponseDTO(album);
     }
+
+    @Transactional
+    public AlbumResponseDTO updateAlbum(Long gameId, Long albumId, AlbumRequestDTO albumRequestDTO) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new RuntimeException("Jogo não encontrado com o ID: " + gameId));
+        Album albumToUpdate = game.getAlbuns().stream()
+                .filter(a -> a.getId().equals(albumId))
+                .findFirst()
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Album com ID " + albumId + " não encontrado para o jogo com ID " + gameId));
+        albumToUpdate.setAlbumTitle(albumRequestDTO.getAlbumTitle());
+        gameRepository.save(game);
+
+        return new AlbumResponseDTO(albumToUpdate);
+    }
+
+    @Transactional
+    public void deleteAlbum(Long gameId, Long albumId) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new RuntimeException("Jogo não encontrado com o ID: " + gameId));
+        Album albumToDelete = game.getAlbuns().stream()
+                .filter(a -> a.getId().equals(albumId))
+                .findFirst()
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Album com ID " + albumId + " não encontrado para o jogo com ID " + gameId));
+        game.getAlbuns().remove(albumToDelete);
+        gameRepository.save(game);
+    }
 }

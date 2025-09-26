@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @RestController
@@ -35,12 +36,28 @@ public class AlbumController {
     @GetMapping
     public ResponseEntity<List<AlbumResponseDTO>> listAlbuns(@PathVariable Long gameId) {
         List<AlbumResponseDTO> albuns = albumService.listAlbunsOfAGame(gameId);
+        
         return ResponseEntity.ok(albuns);
     }
-    
+
     @GetMapping("/{albumId}")
     public ResponseEntity<AlbumResponseDTO> searchAlbumById(@PathVariable Long gameId, @PathVariable Long albumId) {
         AlbumResponseDTO album = albumService.searchAlbumById(gameId, albumId);
+
         return ResponseEntity.ok(album);
+    }
+
+    @PutMapping("/{albumId}")
+    public ResponseEntity<AlbumResponseDTO> updateAlbum(@PathVariable Long gameId, @PathVariable Long albumId,
+            @RequestBody @Valid AlbumRequestDTO albumRequestDTO) {
+        AlbumResponseDTO albumUpdated = albumService.updateAlbum(gameId, albumId, albumRequestDTO);
+
+        return ResponseEntity.ok(albumUpdated);
+    }
+
+    @DeleteMapping("/{albumId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteAlbum(@PathVariable Long gameId, @PathVariable Long albumId) {
+        albumService.deleteAlbum(gameId, albumId);
     }
 }
