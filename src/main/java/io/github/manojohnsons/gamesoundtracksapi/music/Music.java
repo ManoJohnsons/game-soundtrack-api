@@ -39,4 +39,10 @@ public class Music {
 
     @OneToMany(mappedBy = "music", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaybackLink> links;
+
+    public Music(String musicTitle, Integer durationInSeconds, Album album) {
+        this.musicTitle = musicTitle;
+        this.durationInSeconds = durationInSeconds;
+        this.album = album;
+    }
 }
