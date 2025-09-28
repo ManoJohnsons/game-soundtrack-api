@@ -16,10 +16,10 @@ import jakarta.validation.Valid;
 @RequestMapping("/games/{gameId}/albums/{albumId}/musics")
 public class MusicController {
 
-    private final AlbumService albumService;
+    private final MusicService musicService;
 
-    public MusicController(AlbumService albumService) {
-        this.albumService = albumService;
+    public MusicController(MusicService musicService) {
+        this.musicService = musicService;
     }
 
     @PostMapping
@@ -28,7 +28,7 @@ public class MusicController {
             @PathVariable Long albumId,
             @RequestBody @Valid MusicRequestDTO musicRequestDTO,
             UriComponentsBuilder uriBuilder) {
-        MusicResponseDTO newMusic = albumService.addMusic(gameId, albumId, musicRequestDTO);
+        MusicResponseDTO newMusic = musicService.addMusic(gameId, albumId, musicRequestDTO);
         URI location = uriBuilder.path("/games/{gameId}/albums/{albumId}/musics/{musicId}")
                 .buildAndExpand(gameId, albumId, newMusic.getId())
                 .toUri();
@@ -40,7 +40,7 @@ public class MusicController {
     public ResponseEntity<List<MusicResponseDTO>> listMusics(
             @PathVariable Long gameId,
             @PathVariable Long albumId) {
-        List<MusicResponseDTO> allMusics = albumService.listMusicsFromAlbum(gameId, albumId);
+        List<MusicResponseDTO> allMusics = musicService.listMusicsFromAlbum(gameId, albumId);
 
         return ResponseEntity.ok(allMusics);
     }
@@ -50,7 +50,7 @@ public class MusicController {
             @PathVariable Long gameId,
             @PathVariable Long albumId,
             @PathVariable Long musicId) {
-        MusicResponseDTO musicFetched = albumService.findMusicById(gameId, albumId, musicId);
+        MusicResponseDTO musicFetched = musicService.findMusicById(gameId, albumId, musicId);
 
         return ResponseEntity.ok(musicFetched);
     }
@@ -61,7 +61,7 @@ public class MusicController {
             @PathVariable Long albumId,
             @PathVariable Long musicId,
             @RequestBody @Valid MusicRequestDTO musicRequestDTO) {
-        MusicResponseDTO musicUpdate = albumService.updateMusic(gameId, albumId, musicId, musicRequestDTO);
+        MusicResponseDTO musicUpdate = musicService.updateMusic(gameId, albumId, musicId, musicRequestDTO);
 
         return ResponseEntity.ok(musicUpdate);
     }
@@ -72,6 +72,6 @@ public class MusicController {
             @PathVariable Long gameId,
             @PathVariable Long albumId,
             @PathVariable Long musicId) {
-        albumService.deleteMusic(gameId, albumId, musicId);
+        musicService.deleteMusic(gameId, albumId, musicId);
     }
 }

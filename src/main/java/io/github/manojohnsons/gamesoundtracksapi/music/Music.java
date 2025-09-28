@@ -30,7 +30,6 @@ public class Music {
     @ManyToOne
     @JoinColumn(name = "id_album", nullable = false)
     @JsonIgnore
-    @Setter
     private Album album;
 
     @ManyToMany
