@@ -28,6 +28,11 @@ public class PlaybackLink {
     @ManyToOne
     @JoinColumn(name = "id_music", nullable = false)
     @JsonIgnore
-    @Setter
     private Music music;
+
+    public PlaybackLink(String platformName, String musicUrl, Music music) {
+        this.platformName = platformName;
+        this.musicUrl = musicUrl;
+        this.music = music;
+    }
 }
