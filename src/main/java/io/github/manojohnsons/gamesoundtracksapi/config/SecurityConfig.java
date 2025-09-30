@@ -30,15 +30,19 @@ public class SecurityConfig {
     SecurityFilterChain devSecurityFilterChain(HttpSecurity http) throws Exception {
         System.out.println(">>> CARREGANDO CONFIGURAÇÕES DE SEGURANÇA PARA [DEV] <<<");
         http
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // For H2 Console
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // For H2
+                                                                                                         // Console
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html",
-                                "/swagger-ui/**")
-                        .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers(HttpMethod.GET).permitAll()
+                        .requestMatchers(HttpMethod.POST).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -54,9 +58,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html",
-                                "/swagger-ui/**")
-                        .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
+                        .requestMatchers(HttpMethod.GET).permitAll()
+                        .requestMatchers(HttpMethod.POST).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
