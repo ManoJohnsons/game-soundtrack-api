@@ -10,7 +10,7 @@ The goal of the Game Soundtracks API is to provide a service where users can sea
 
 ## ✨ Features
 
-- [ ] Full CRUD for Games, Albums, Songs, and Artists.
+- [x] Full CRUD for Games, Albums, Songs, and Artists.
 - [ ] Flexible search system to find songs by game, album, or artist.
 - [x] User authentication via JWT (JSON Web Token).
 - [x] Endpoint for users to favorite their preferred songs.
