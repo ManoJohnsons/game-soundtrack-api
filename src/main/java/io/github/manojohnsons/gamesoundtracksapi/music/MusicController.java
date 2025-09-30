@@ -11,6 +11,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import io.github.manojohnsons.gamesoundtracksapi.music.dtos.MusicRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.music.dtos.MusicResponseDTO;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/games/{gameId}/albums/{albumId}/musics")
@@ -74,4 +76,17 @@ public class MusicController {
             @PathVariable Long musicId) {
         musicService.deleteMusic(gameId, albumId, musicId);
     }
+
+    @PostMapping("/{musicId}/composers/{composerId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void associateComposer(@PathVariable Long musicId, @PathVariable Long composerId) {
+        musicService.associateComposer(musicId, composerId);
+    }
+
+    @DeleteMapping("/{musicId}/composers/{composerId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void unassociateComposer(@PathVariable Long musicId, @PathVariable Long composerId) {
+        musicService.unassociateComposer(musicId, composerId);
+    }
+
 }

@@ -2,6 +2,7 @@ package io.github.manojohnsons.gamesoundtracksapi.music;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +15,14 @@ import io.github.manojohnsons.gamesoundtracksapi.music.dtos.MusicResponseDTO;
 @Service
 public class MusicService {
 
-    private final GameRepository gameRepository;
-    private final GameAggregateFinder gameAggregateFinder;
-
-    public MusicService(GameRepository gameRepository, GameAggregateFinder gameAggregateFinder) {
-        this.gameRepository = gameRepository;
-        this.gameAggregateFinder = gameAggregateFinder;
-    }
+    @Autowired
+    private GameRepository gameRepository;
+    @Autowired
+    private MusicRepository musicRepository;
+    @Autowired
+    private ComposerRepository composerRepository;
+    @Autowired
+    private GameAggregateFinder gameAggregateFinder;
 
     @Transactional
     public MusicResponseDTO addMusic(Long gameId, Long albumId, MusicRequestDTO musicRequestDTO) {
@@ -72,5 +74,35 @@ public class MusicService {
         Music musicToDelete = gameAggregateFinder.findMusicInAlbum(musicId, album);
         album.getMusics().remove(musicToDelete);
         gameRepository.save(game);
+    }
+
+    @Transactional
+    public void associateComposer(Long musicId, Long composerId) {
+        Music music = findMusic(musicId);
+        Composer composer = findComposer(composerId);
+        music.getComposers().add(composer);
+        musicRepository.save(music);
+    }
+
+    @Transactional
+    public void unassociateComposer(Long musicId, Long composerId) {
+        Music music = findMusic(musicId);
+        Composer composer = findComposer(composerId);
+        music.getComposers().remove(composer);
+        musicRepository.save(music);
+    }
+
+    private Music findMusic(Long musicId) {
+        Music music = musicRepository.findById(musicId)
+                .orElseThrow(() -> new RuntimeException("Música não encontrada com o ID: " + musicId));
+
+        return music;
+    }
+
+    private Composer findComposer(Long composerId) {
+        Composer composer = composerRepository.findById(composerId)
+                .orElseThrow(() -> new RuntimeException("Artista/Compositor não encontrado com o ID: " + composerId));
+
+        return composer;
     }
 }
