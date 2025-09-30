@@ -8,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.manojohnsons.gamesoundtracksapi.music.Music;
+import io.github.manojohnsons.gamesoundtracksapi.music.MusicRepository;
 import io.github.manojohnsons.gamesoundtracksapi.user.dtos.UserRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.user.dtos.UserResponseDTO;
 
@@ -15,7 +17,10 @@ import io.github.manojohnsons.gamesoundtracksapi.user.dtos.UserResponseDTO;
 public class UserService {
 
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private MusicRepository musicRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -24,41 +29,73 @@ public class UserService {
     public UserResponseDTO insertUser(UserRequestDTO userRequestDTO) {
         var encryptedPassword = passwordEncoder.encode(userRequestDTO.getPassword());
         User newUser = new User(userRequestDTO.getUsername(), encryptedPassword, Role.USER);
-        User userSaved = repository.save(newUser);
+        User userSaved = userRepository.save(newUser);
 
         return new UserResponseDTO(userSaved);
     }
 
     @Transactional(readOnly = true)
     public UserResponseDTO getUserById(Long id) {
-        User userFetched = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        User userFetched = userRepository.findById(id).orElseThrow(NoSuchElementException::new);
 
         return new UserResponseDTO(userFetched);
     }
 
     @Transactional(readOnly = true)
     public List<UserResponseDTO> getAllUsers() {
-        List<User> allUsers = repository.findAll();
+        List<User> allUsers = userRepository.findAll();
 
         return allUsers.stream().map(UserResponseDTO::new).toList();
     }
 
     @Transactional
     public UserResponseDTO updateUserById(Long id, UserRequestDTO userRequestDTO) {
-        User userToUpdate = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        User userToUpdate = userRepository.findById(id).orElseThrow(NoSuchElementException::new);
         userToUpdate.setUsername(userRequestDTO.getUsername());
         userToUpdate.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
-        User userUpdated = repository.save(userToUpdate);
+        User userUpdated = userRepository.save(userToUpdate);
 
         return new UserResponseDTO(userUpdated);
     }
 
     @Transactional
     public void deleteUserById(Long id) {
-        if (!repository.existsById(id)) {
+        if (!userRepository.existsById(id)) {
             throw new RuntimeException("Usuario não encontrado com o ID: " + id);
         }
 
-        repository.deleteById(id);
+        userRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void favoriteMusic(String username, Long musicId) {
+        User user = findAndValidateUser(username);
+        Music music = findMusic(musicId);
+        user.getFavoriteMusics().add(music);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void unfavoriteMusic(String username, Long musicId) {
+        User user = findAndValidateUser(username);
+        Music music = findMusic(musicId);
+        user.getFavoriteMusics().remove(music);
+        userRepository.save(user);
+    }
+
+    private User findAndValidateUser(String username) {
+        User user = (User) userRepository.findByUsername(username);
+        if (user == null) {
+            throw new RuntimeException("Usuário não encontrado!");
+        }
+
+        return user;
+    }
+
+    private Music findMusic(Long musicId) {
+        Music music = musicRepository.findById(musicId)
+                .orElseThrow(() -> new RuntimeException("Música não encontrada com o ID: " + musicId));
+                
+        return music;
     }
 }
