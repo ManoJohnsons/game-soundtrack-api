@@ -24,12 +24,16 @@ public class Availability {
     @ManyToOne
     @JoinColumn(name = "id_game", nullable = false)
     @JsonIgnore
-    @Setter
     private Game game;
 
     @ManyToOne
     @JoinColumn(name = "id_platform", nullable = false)
     @JsonIgnore
-    @Setter
     private Platform platform;
+
+    public Availability(String purchaseUrl, Game game, Platform platform) {
+        this.purchaseUrl = purchaseUrl;
+        this.game = game;
+        this.platform = platform;
+    }
 }

@@ -8,11 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import io.github.manojohnsons.gamesoundtracksapi.game.dtos.AvailabilityRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.PlatformRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.PlatformResponseDTO;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/platforms")
@@ -26,21 +29,21 @@ public class PlatformController {
             UriComponentsBuilder uriBuilder) {
         PlatformResponseDTO newPlatform = service.insertPlatform(platformRequestDTO);
         URI location = uriBuilder.path("/platforms/{id}").buildAndExpand(newPlatform.getId()).toUri();
-        
+
         return ResponseEntity.created(location).body(newPlatform);
     }
 
     @GetMapping
     public ResponseEntity<List<PlatformResponseDTO>> getAllPlatforms() {
         List<PlatformResponseDTO> allPlatforms = service.getAllPlatforms();
-        
+
         return ResponseEntity.ok(allPlatforms);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PlatformResponseDTO> getPlatformById(@PathVariable Long id) {
         PlatformResponseDTO platformFetched = service.getPlatformById(id);
-        
+
         return ResponseEntity.ok(platformFetched);
     }
 
@@ -48,7 +51,7 @@ public class PlatformController {
     public ResponseEntity<PlatformResponseDTO> updatePlatform(@PathVariable Long id,
             @RequestBody @Valid PlatformRequestDTO platformRequestDTO) {
         PlatformResponseDTO platformUpdated = service.updatePlatform(id, platformRequestDTO);
-        
+
         return ResponseEntity.ok(platformUpdated);
     }
 
@@ -57,4 +60,12 @@ public class PlatformController {
     public void deletePlatform(@PathVariable Long id) {
         service.deletePlatform(id);
     }
+
+    @PostMapping("/{platformId}/games/{gameId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void addAvailableGame(@PathVariable Long platformId, @PathVariable Long gameId,
+            @RequestBody @Valid AvailabilityRequestDTO availabilityRequestDTO) {
+        service.addGameAvailable(platformId, gameId, availabilityRequestDTO);
+    }
+
 }

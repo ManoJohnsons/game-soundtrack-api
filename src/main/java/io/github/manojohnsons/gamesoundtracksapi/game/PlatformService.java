@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.manojohnsons.gamesoundtracksapi.game.dtos.AvailabilityRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.PlatformRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.PlatformResponseDTO;
 
@@ -14,45 +15,58 @@ import io.github.manojohnsons.gamesoundtracksapi.game.dtos.PlatformResponseDTO;
 public class PlatformService {
 
     @Autowired
-    private PlatformRepository repository;
+    private PlatformRepository platformRepository;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Transactional
     public PlatformResponseDTO insertPlatform(PlatformRequestDTO platformRequestDTO) {
         Platform platformToInsert = new Platform(platformRequestDTO.getPlatformName());
-        Platform platformCreated = repository.save(platformToInsert);
+        Platform platformCreated = platformRepository.save(platformToInsert);
 
         return new PlatformResponseDTO(platformCreated);
     }
 
     @Transactional(readOnly = true)
-    public PlatformResponseDTO getPlatformById(Long id) {
-        Platform platformFetched = repository.findById(id).orElseThrow(NoSuchElementException::new);
-        
+    public PlatformResponseDTO getPlatformById(Long platformId) {
+        Platform platformFetched = platformRepository.findById(platformId).orElseThrow(NoSuchElementException::new);
+
         return new PlatformResponseDTO(platformFetched);
     }
 
     @Transactional(readOnly = true)
     public List<PlatformResponseDTO> getAllPlatforms() {
-        List<Platform> allPlatforms = repository.findAll();
-        
+        List<Platform> allPlatforms = platformRepository.findAll();
+
         return allPlatforms.stream().map(PlatformResponseDTO::new).toList();
     }
 
     @Transactional
-    public PlatformResponseDTO updatePlatform(Long id, PlatformRequestDTO platformRequestDTO) {
-        Platform platformToUpdate = repository.findById(id).orElseThrow(NoSuchElementException::new);
+    public PlatformResponseDTO updatePlatform(Long platformId, PlatformRequestDTO platformRequestDTO) {
+        Platform platformToUpdate = platformRepository.findById(platformId).orElseThrow(NoSuchElementException::new);
         platformToUpdate.setPlatformName(platformRequestDTO.getPlatformName());
-        Platform platformUpdated = repository.save(platformToUpdate);
+        Platform platformUpdated = platformRepository.save(platformToUpdate);
 
         return new PlatformResponseDTO(platformUpdated);
     }
 
     @Transactional
-    public void deletePlatform(Long id) {
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("Plataforma não encontrada com o ID: " + id);
+    public void deletePlatform(Long platformId) {
+        if (!platformRepository.existsById(platformId)) {
+            throw new RuntimeException("Plataforma não encontrada com o ID: " + platformId);
         }
-        repository.deleteById(id);
+        platformRepository.deleteById(platformId);
+    }
+
+    public void addGameAvailable(Long platformId, Long gameId, AvailabilityRequestDTO availabilityRequestDTO) {
+        Platform platform = platformRepository.findById(platformId)
+                .orElseThrow(() -> new RuntimeException("Plataforma não encontrada com ID: " + platformId));
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new RuntimeException("Plataforma não encontrada com ID: " + gameId));
+        Availability availability = new Availability(availabilityRequestDTO.getPurchaseUrl(), game, platform);
+        platform.getAvailabilities().add(availability);
+        platformRepository.save(platform);
     }
 
 }
