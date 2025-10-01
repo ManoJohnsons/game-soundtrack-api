@@ -2,12 +2,17 @@ package io.github.manojohnsons.gamesoundtracksapi.security;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.manojohnsons.gamesoundtracksapi.exception.InvalidTokenException;
+import io.github.manojohnsons.gamesoundtracksapi.exception.GlobalExceptionHandler.ApiError;
 import io.github.manojohnsons.gamesoundtracksapi.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -31,17 +36,26 @@ public class SecurityFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         var tokenJWT = retrieveToken(request);
 
-        if (tokenJWT != null) {
-            var subject = tokenService.getSubject(tokenJWT);
-            var user = userRepository.findByUsername(subject);
+        try {
+            if (tokenJWT != null) {
+                var subject = tokenService.getSubject(tokenJWT);
+                var user = userRepository.findByUsername(subject);
 
-            if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
+            filterChain.doFilter(request, response);
+        } catch (InvalidTokenException e) {
+            ApiError error = new ApiError(HttpStatus.FORBIDDEN, e.getMessage());
+
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.setContentType("application/json");
+
+            response.getWriter().write(new ObjectMapper().writeValueAsString(error));
         }
-        filterChain.doFilter(request, response);
     }
 
     private String retrieveToken(HttpServletRequest request) {

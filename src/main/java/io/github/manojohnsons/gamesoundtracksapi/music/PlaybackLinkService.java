@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceNotFoundException;
 import io.github.manojohnsons.gamesoundtracksapi.music.dtos.PlaybackLinkRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.music.dtos.PlaybackLinkResponseDTO;
 
@@ -64,15 +65,13 @@ public class PlaybackLinkService {
 
     private Music findMusicById(Long musicId) {
         return musicRepository.findById(musicId)
-                .orElseThrow(() -> new RuntimeException("Música não encontrada com ID: " + musicId));
+                .orElseThrow(() -> new ResourceNotFoundException("Música não encontrada com o ID: " + musicId));
     }
 
     private PlaybackLink findLinkInMusic(Music music, Long linkId) {
         return music.getLinks().stream()
                 .filter(l -> l.getId().equals(linkId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException(
-                        "Link da música com ID " + linkId + " não encontrada para a música com ID " + music.getId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Link da música com ID: " + linkId + " não encontrado para a música com ID "+ music.getId()));
     }
-
 }

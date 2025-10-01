@@ -9,6 +9,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import io.github.manojohnsons.gamesoundtracksapi.exception.InvalidTokenException;
 import io.github.manojohnsons.gamesoundtracksapi.user.User;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -56,7 +57,7 @@ public class TokenService {
                     .getPayload()
                     .getSubject();
         } catch (JwtException e) {
-            throw new RuntimeException("Token JWT inválido ou expirado!");
+            throw new InvalidTokenException("Token JWT inválido ou expirado!");
         }
     }
 }

@@ -1,12 +1,12 @@
 package io.github.manojohnsons.gamesoundtracksapi.game;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceNotFoundException;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.AvailabilityRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.PlatformRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.PlatformResponseDTO;
@@ -30,7 +30,8 @@ public class PlatformService {
 
     @Transactional(readOnly = true)
     public PlatformResponseDTO getPlatformById(Long platformId) {
-        Platform platformFetched = platformRepository.findById(platformId).orElseThrow(NoSuchElementException::new);
+        Platform platformFetched = platformRepository.findById(platformId)
+                .orElseThrow(() -> new ResourceNotFoundException("Plataforma não encontrada com o ID: " + platformId));
 
         return new PlatformResponseDTO(platformFetched);
     }
@@ -44,7 +45,8 @@ public class PlatformService {
 
     @Transactional
     public PlatformResponseDTO updatePlatform(Long platformId, PlatformRequestDTO platformRequestDTO) {
-        Platform platformToUpdate = platformRepository.findById(platformId).orElseThrow(NoSuchElementException::new);
+        Platform platformToUpdate = platformRepository.findById(platformId)
+                .orElseThrow(() -> new ResourceNotFoundException("Plataforma não encontrada com o ID: " + platformId));
         platformToUpdate.setPlatformName(platformRequestDTO.getPlatformName());
         Platform platformUpdated = platformRepository.save(platformToUpdate);
 
@@ -54,16 +56,16 @@ public class PlatformService {
     @Transactional
     public void deletePlatform(Long platformId) {
         if (!platformRepository.existsById(platformId)) {
-            throw new RuntimeException("Plataforma não encontrada com o ID: " + platformId);
+            throw new ResourceNotFoundException("Plataforma não encontrada com o ID: " + platformId);
         }
         platformRepository.deleteById(platformId);
     }
 
     public void addGameAvailable(Long platformId, Long gameId, AvailabilityRequestDTO availabilityRequestDTO) {
         Platform platform = platformRepository.findById(platformId)
-                .orElseThrow(() -> new RuntimeException("Plataforma não encontrada com ID: " + platformId));
+                .orElseThrow(() -> new ResourceNotFoundException("Plataforma não encontrada com o ID: " + platformId));
         Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new RuntimeException("Plataforma não encontrada com ID: " + gameId));
+                .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado com o ID: " + gameId));
         Availability availability = new Availability(availabilityRequestDTO.getPurchaseUrl(), game, platform);
         platform.getAvailabilities().add(availability);
         platformRepository.save(platform);

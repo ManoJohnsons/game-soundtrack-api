@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.manojohnsons.gamesoundtracksapi.core.finder.GameAggregateFinder;
+import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceNotFoundException;
 import io.github.manojohnsons.gamesoundtracksapi.game.Game;
 import io.github.manojohnsons.gamesoundtracksapi.game.GameRepository;
 import io.github.manojohnsons.gamesoundtracksapi.music.dtos.MusicRequestDTO;
@@ -94,14 +95,14 @@ public class MusicService {
 
     private Music findMusic(Long musicId) {
         Music music = musicRepository.findById(musicId)
-                .orElseThrow(() -> new RuntimeException("Música não encontrada com o ID: " + musicId));
+                .orElseThrow(() -> new ResourceNotFoundException("Música não encontrada com o ID: " + musicId));
 
         return music;
     }
 
     private Composer findComposer(Long composerId) {
         Composer composer = composerRepository.findById(composerId)
-                .orElseThrow(() -> new RuntimeException("Artista/Compositor não encontrado com o ID: " + composerId));
+                .orElseThrow(() -> new ResourceNotFoundException("Artista/Compositor não encontrado com o ID: " + composerId));
 
         return composer;
     }

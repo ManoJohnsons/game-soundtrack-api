@@ -1,12 +1,12 @@
 package io.github.manojohnsons.gamesoundtracksapi.game;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceNotFoundException;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.GameRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.GameResponseDTO;
 
@@ -37,14 +37,16 @@ public class GameService {
 
     @Transactional(readOnly = true)
     public GameResponseDTO searchGameById(Long id) {
-        Game gameFetched = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        Game gameFetched = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado com o ID: " + id));
 
         return new GameResponseDTO(gameFetched);
     }
 
     @Transactional
     public GameResponseDTO updateGameById(Long id, GameRequestDTO dto) {
-        Game gameToUpdate = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        Game gameToUpdate = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado com o ID: " + id));
         gameToUpdate.setGameTitle(dto.getGameTitle());
         gameToUpdate.setDeveloper(dto.getDeveloper());
         gameToUpdate.setPublisher(dto.getPublisher());
@@ -57,7 +59,7 @@ public class GameService {
     @Transactional
     public void deleteGameById(Long id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Jogo não encontrado com o ID: " + id);
+            throw new ResourceNotFoundException("Jogo não encontrado com o ID: " + id);
         }
         repository.deleteById(id);
     }

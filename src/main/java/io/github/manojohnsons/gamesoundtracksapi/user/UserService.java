@@ -1,13 +1,13 @@
 package io.github.manojohnsons.gamesoundtracksapi.user;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceNotFoundException;
 import io.github.manojohnsons.gamesoundtracksapi.music.Music;
 import io.github.manojohnsons.gamesoundtracksapi.music.MusicRepository;
 import io.github.manojohnsons.gamesoundtracksapi.user.dtos.UserRequestDTO;
@@ -36,7 +36,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResponseDTO getUserById(Long id) {
-        User userFetched = userRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        User userFetched = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado com o ID: " + id));
 
         return new UserResponseDTO(userFetched);
     }
@@ -50,7 +50,7 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO updateUserById(Long id, UserRequestDTO userRequestDTO) {
-        User userToUpdate = userRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        User userToUpdate = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
         userToUpdate.setUsername(userRequestDTO.getUsername());
         userToUpdate.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         User userUpdated = userRepository.save(userToUpdate);
@@ -61,7 +61,7 @@ public class UserService {
     @Transactional
     public void deleteUserById(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new RuntimeException("Usuario não encontrado com o ID: " + id);
+            throw new ResourceNotFoundException("Usuário não encontrado com o ID: " + id);
         }
 
         userRepository.deleteById(id);
@@ -86,7 +86,7 @@ public class UserService {
     private User findAndValidateUser(String username) {
         User user = (User) userRepository.findByUsername(username);
         if (user == null) {
-            throw new RuntimeException("Usuário não encontrado!");
+            throw new ResourceNotFoundException("Usuário não encontrado!");
         }
 
         return user;
@@ -94,7 +94,7 @@ public class UserService {
 
     private Music findMusic(Long musicId) {
         Music music = musicRepository.findById(musicId)
-                .orElseThrow(() -> new RuntimeException("Música não encontrada com o ID: " + musicId));
+                .orElseThrow(() -> new ResourceNotFoundException("Música não encontrada com o ID: " + musicId));
                 
         return music;
     }

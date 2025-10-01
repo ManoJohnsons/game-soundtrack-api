@@ -1,12 +1,12 @@
 package io.github.manojohnsons.gamesoundtracksapi.music;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceNotFoundException;
 import io.github.manojohnsons.gamesoundtracksapi.music.dtos.ComposerRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.music.dtos.ComposerResponseDTO;
 
@@ -33,14 +33,14 @@ public class ComposerService {
 
     @Transactional(readOnly = true)
     public ComposerResponseDTO searchComposerById(Long id) {
-        Composer composerFetched = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        Composer composerFetched = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Artista/Compositor não encontrado com o ID: " + id));
 
         return new ComposerResponseDTO(composerFetched);
     }
 
     @Transactional
     public ComposerResponseDTO updateComposerById(Long id, ComposerRequestDTO composerDTO) {
-        Composer composerToUpdate = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        Composer composerToUpdate = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Artista/Compositor não encontrado com o ID: " + id));
         composerToUpdate.setName(composerDTO.getName());
         Composer composerUpdated = repository.save(composerToUpdate);
 
@@ -50,7 +50,7 @@ public class ComposerService {
     @Transactional
     public void deleteComposerById(Long id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Compositor/Artista não encontrado com o ID: " + id);
+            throw new ResourceNotFoundException("Artista/Compositor não encontrado com o ID: " + id);
         }
         repository.deleteById(id);
     }

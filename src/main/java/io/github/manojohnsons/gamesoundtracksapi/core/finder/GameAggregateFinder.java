@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceNotFoundException;
 import io.github.manojohnsons.gamesoundtracksapi.game.Game;
 import io.github.manojohnsons.gamesoundtracksapi.game.GameRepository;
 import io.github.manojohnsons.gamesoundtracksapi.music.Album;
@@ -20,13 +21,13 @@ public class GameAggregateFinder {
 
     public Game findGameById(Long gameId) {
         return gameRepository.findById(gameId)
-                .orElseThrow(() -> new RuntimeException("Jogo não encontrado com o ID: " + gameId));
+                .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado com o ID: " + gameId));
     }
 
     public Album findAlbumInGame(Long albumId, Game game) {
         return findOptionalAlbumInGame(albumId, game)
                 .orElseThrow(
-                        () -> new RuntimeException(
+                        () -> new ResourceNotFoundException(
                                 "Album com ID " + albumId + " não encontrado para o jogo com ID " + game.getId()));
     }
 
@@ -39,7 +40,7 @@ public class GameAggregateFinder {
         return album.getMusics().stream()
                 .filter(m -> m.getId().equals(musicId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "Música com ID " + musicId + " não encontrada para o álbum com ID " + album.getId()));
     }
 
