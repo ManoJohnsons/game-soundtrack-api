@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import io.github.manojohnsons.gamesoundtracksapi.game.dtos.GameFilterDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.GameRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.GameResponseDTO;
 import jakarta.validation.Valid;
@@ -30,8 +31,8 @@ public class GameController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GameResponseDTO>> searchAllGames() {
-        List<GameResponseDTO> games = service.searchAllGames();
+    public ResponseEntity<List<GameResponseDTO>> searchAllGames(GameFilterDTO filterDTO) {
+        List<GameResponseDTO> games = service.searchAllGames(filterDTO);
         
         return ResponseEntity.ok(games);
     }

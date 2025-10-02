@@ -3,10 +3,12 @@ package io.github.manojohnsons.gamesoundtracksapi.game;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceNotFoundException;
+import io.github.manojohnsons.gamesoundtracksapi.game.dtos.GameFilterDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.GameRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.GameResponseDTO;
 
@@ -15,6 +17,8 @@ public class GameService {
 
     @Autowired
     private GameRepository repository;
+    @Autowired
+    private GameSpecificationBuilder specificationBuilder;
 
     @Transactional
     public GameResponseDTO insertGame(GameRequestDTO gameDTO) {
@@ -29,8 +33,9 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<GameResponseDTO> searchAllGames() {
-        List<Game> allGames = repository.findAll();
+    public List<GameResponseDTO> searchAllGames(GameFilterDTO filterDTO) {
+        Specification<Game> spec = specificationBuilder.build(filterDTO);
+        List<Game> allGames = repository.findAll(spec);
 
         return allGames.stream().map(GameResponseDTO::new).toList();
     }
