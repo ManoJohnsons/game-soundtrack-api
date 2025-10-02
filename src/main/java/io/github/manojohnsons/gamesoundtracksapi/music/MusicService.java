@@ -3,6 +3,7 @@ package io.github.manojohnsons.gamesoundtracksapi.music;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +11,7 @@ import io.github.manojohnsons.gamesoundtracksapi.core.finder.GameAggregateFinder
 import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceNotFoundException;
 import io.github.manojohnsons.gamesoundtracksapi.game.Game;
 import io.github.manojohnsons.gamesoundtracksapi.game.GameRepository;
+import io.github.manojohnsons.gamesoundtracksapi.music.dtos.MusicFilterDTO;
 import io.github.manojohnsons.gamesoundtracksapi.music.dtos.MusicRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.music.dtos.MusicResponseDTO;
 
@@ -24,6 +26,8 @@ public class MusicService {
     private ComposerRepository composerRepository;
     @Autowired
     private GameAggregateFinder gameAggregateFinder;
+    @Autowired
+    private MusicSpecificationBuilder specificationBuilder;
 
     @Transactional
     public MusicResponseDTO addMusic(Long gameId, Long albumId, MusicRequestDTO musicRequestDTO) {
@@ -91,6 +95,14 @@ public class MusicService {
         Composer composer = findComposer(composerId);
         music.getComposers().remove(composer);
         musicRepository.save(music);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MusicResponseDTO> search(MusicFilterDTO filterDTO) {
+        Specification<Music> spec = specificationBuilder.build(filterDTO);
+        List<Music> allMusics = musicRepository.findAll(spec);
+
+        return allMusics.stream().map(MusicResponseDTO::new).toList();
     }
 
     private Music findMusic(Long musicId) {
