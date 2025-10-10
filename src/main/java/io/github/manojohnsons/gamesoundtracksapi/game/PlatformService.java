@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceAlreadyExistsException;
 import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceNotFoundException;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.AvailabilityRequestDTO;
 import io.github.manojohnsons.gamesoundtracksapi.game.dtos.PlatformRequestDTO;
@@ -22,6 +23,10 @@ public class PlatformService {
 
     @Transactional
     public PlatformResponseDTO insertPlatform(PlatformRequestDTO platformRequestDTO) {
+        if (platformRepository.existsByPlatformName(platformRequestDTO.getPlatformName())) {
+            throw new ResourceAlreadyExistsException(
+                    "Nome da plataforma '" + platformRequestDTO.getPlatformName() + "' já está em registrado.");
+        }
         Platform platformToInsert = new Platform(platformRequestDTO.getPlatformName());
         Platform platformCreated = platformRepository.save(platformToInsert);
 
@@ -47,6 +52,11 @@ public class PlatformService {
     public PlatformResponseDTO updatePlatform(Long platformId, PlatformRequestDTO platformRequestDTO) {
         Platform platformToUpdate = platformRepository.findById(platformId)
                 .orElseThrow(() -> new ResourceNotFoundException("Plataforma não encontrada com o ID: " + platformId));
+        if (!platformToUpdate.getPlatformName().equals(platformRequestDTO.getPlatformName()) &&
+                platformRepository.existsByPlatformName(platformRequestDTO.getPlatformName())) {
+            throw new ResourceAlreadyExistsException(
+                    "Nome da plataforma '" + platformRequestDTO.getPlatformName() + "' já está em registrado.");
+        }
         platformToUpdate.setPlatformName(platformRequestDTO.getPlatformName());
         Platform platformUpdated = platformRepository.save(platformToUpdate);
 

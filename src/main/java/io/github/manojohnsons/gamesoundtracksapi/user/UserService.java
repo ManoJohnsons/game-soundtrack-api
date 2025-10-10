@@ -3,10 +3,12 @@ package io.github.manojohnsons.gamesoundtracksapi.user;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceAlreadyExistsException;
 import io.github.manojohnsons.gamesoundtracksapi.exception.ResourceNotFoundException;
 import io.github.manojohnsons.gamesoundtracksapi.music.Music;
 import io.github.manojohnsons.gamesoundtracksapi.music.MusicRepository;
@@ -27,6 +29,9 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO insertUser(UserRequestDTO userRequestDTO) {
+        if (userRepository.existsByUsername(userRequestDTO.getUsername())) {
+            throw new ResourceAlreadyExistsException("Username '" + userRequestDTO.getUsername() + "' já está em uso.");
+        }
         var encryptedPassword = passwordEncoder.encode(userRequestDTO.getPassword());
         User newUser = new User(userRequestDTO.getUsername(), encryptedPassword, Role.USER);
         User userSaved = userRepository.save(newUser);
@@ -36,7 +41,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResponseDTO getUserById(Long id) {
-        User userFetched = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado com o ID: " + id));
+        User userFetched = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
 
         return new UserResponseDTO(userFetched);
     }
@@ -49,8 +55,15 @@ public class UserService {
     }
 
     @Transactional
+    @PreAuthorize("principal.getId() == #id or hasRole('ADMIN')")
     public UserResponseDTO updateUserById(Long id, UserRequestDTO userRequestDTO) {
-        User userToUpdate = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
+        User userToUpdate = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
+        if (!userToUpdate.getUsername().equals(userRequestDTO.getUsername()) &&
+                userRepository.existsByUsername(userRequestDTO.getUsername())) {
+            throw new ResourceAlreadyExistsException(
+                    "Username '" + userRequestDTO.getUsername() + "' já pertence a outro usuário.");
+        }
         userToUpdate.setUsername(userRequestDTO.getUsername());
         userToUpdate.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         User userUpdated = userRepository.save(userToUpdate);
@@ -59,6 +72,7 @@ public class UserService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUserById(Long id) {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("Usuário não encontrado com o ID: " + id);
@@ -95,7 +109,7 @@ public class UserService {
     private Music findMusic(Long musicId) {
         Music music = musicRepository.findById(musicId)
                 .orElseThrow(() -> new ResourceNotFoundException("Música não encontrada com o ID: " + musicId));
-                
+
         return music;
     }
 }

@@ -42,7 +42,7 @@ public class TokenService {
         return Jwts.builder()
                 .issuer(this.issuer)
                 .subject(user.getUsername())
-                .issuedAt(Date.from(now))
+                .issuedAt(Date.from(now)).notBefore(Date.from(now))
                 .expiration(Date.from(expiration))
                 .signWith(secretKey)
                 .compact();
